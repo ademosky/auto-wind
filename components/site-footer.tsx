@@ -22,12 +22,12 @@ export function SiteFooter({
       <div className="mx-auto w-full max-w-[1280px] px-5 py-14 md:px-10 md:py-16">
         <div className="grid gap-12 md:grid-cols-[1.4fr_1fr_1fr]">
           <div>
-            <span className="relative block h-12 w-[202px] overflow-hidden md:h-14 md:w-[236px]">
+            <span className="relative block h-[52px] w-[162px] overflow-hidden md:h-[60px] md:w-[186px]">
               <Image
                 src="/brand/auto-wind-logo.png"
                 alt="AUTO WIND"
                 fill
-                sizes="236px"
+                sizes="186px"
                 className="object-contain object-left"
               />
             </span>

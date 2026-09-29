@@ -63,13 +63,13 @@ export function SiteHeader({
           aria-label="AUTO WIND — почетна"
           className="group flex shrink-0 items-center gap-3 transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500/60"
         >
-          <span className="relative block h-12 w-[202px] overflow-hidden md:h-14 md:w-[236px]">
+          <span className="relative block h-[54px] w-[168px] overflow-hidden md:h-16 md:w-[199px]">
             <Image
               src="/brand/auto-wind-logo.png"
               alt="AUTO WIND"
               fill
               priority
-              sizes="236px"
+              sizes="199px"
               className="object-contain object-left drop-shadow-[0_2px_10px_rgba(0,0,0,0.45)]"
             />
           </span>
