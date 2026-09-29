@@ -4,6 +4,7 @@ import { isAuthenticated } from "@/lib/auth";
 import { buildVehicleSlug } from "@/lib/format";
 import { adminAllSlugs, adminGetVehicle } from "@/lib/supabase/queries";
 import { adminClient, PHOTO_BUCKET } from "@/lib/supabase/admin";
+import { describeSupabaseError } from "@/lib/supabase/errors";
 import { normaliseVehicle, validateVehicle } from "@/lib/vehicle-input";
 
 type Ctx = { params: Promise<{ id: string }> };
@@ -33,7 +34,7 @@ export async function PATCH(request: Request, { params }: Ctx) {
     if (typeof body.featured === "boolean") patch.featured = body.featured;
     if (typeof body.sort_order === "number") patch.sort_order = body.sort_order;
     const { error } = await adminClient().from("vehicles").update(patch).eq("id", id);
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error) return NextResponse.json({ error: describeSupabaseError(error) }, { status: 500 });
     await refresh(existing.slug);
     return NextResponse.json({ ok: true });
   }
@@ -46,7 +47,7 @@ export async function PATCH(request: Request, { params }: Ctx) {
   const slug = buildVehicleSlug(payload.brand, payload.model, payload.year, taken);
 
   const { error } = await adminClient().from("vehicles").update({ ...payload, slug }).eq("id", id);
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return NextResponse.json({ error: describeSupabaseError(error) }, { status: 500 });
 
   await refresh(slug);
   if (slug !== existing.slug) await refresh(existing.slug);
@@ -71,9 +72,10 @@ export async function DELETE(_request: Request, { params }: Ctx) {
   }
 
   const { error } = await adminClient().from("vehicles").delete().eq("id", id);
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return NextResponse.json({ error: describeSupabaseError(error) }, { status: 500 });
 
   await refresh(existing.slug);
   return NextResponse.json({ ok: true });
 }
+
 

@@ -42,22 +42,17 @@ export function SiteFooter({
             <ul className="mt-5 space-y-3 text-[15px]">
               <li>
                 <Link href="/" className="text-stone-2/75 transition-colors hover:text-gold-300">
-                  Почетна
-                </Link>
-              </li>
-              <li>
-                <Link href="/vozila" className="text-stone-2/75 transition-colors hover:text-gold-300">
                   Возила во понуда
-                </Link>
-              </li>
-              <li>
-                <Link href="/#zosto-nie" className="text-stone-2/75 transition-colors hover:text-gold-300">
-                  Зошто AUTO WIND
                 </Link>
               </li>
               <li>
                 <Link href="/#kontakt" className="text-stone-2/75 transition-colors hover:text-gold-300">
                   Контакт
+                </Link>
+              </li>
+              <li>
+                <Link href="/admin" className="text-stone-2/75 transition-colors hover:text-gold-300">
+                  Администрација
                 </Link>
               </li>
             </ul>
@@ -115,4 +110,5 @@ export function SiteFooter({
     </footer>
   );
 }
+
 

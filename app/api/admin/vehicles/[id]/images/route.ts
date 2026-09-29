@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { isAuthenticated } from "@/lib/auth";
 import { adminGetVehicle } from "@/lib/supabase/queries";
 import { adminClient, PHOTO_BUCKET } from "@/lib/supabase/admin";
+import { describeSupabaseError } from "@/lib/supabase/errors";
 
 type Ctx = { params: Promise<{ id: string }> };
 

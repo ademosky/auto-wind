@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { isAuthenticated } from "@/lib/auth";
 import { adminClient } from "@/lib/supabase/admin";
+import { describeSupabaseError } from "@/lib/supabase/errors";
 
 function text(value: unknown): string | null {
   if (value === null || value === undefined) return null;
@@ -29,7 +30,7 @@ export async function PATCH(request: Request) {
   };
 
   const { error } = await adminClient().from("site_settings").upsert({ id: 1, ...patch });
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return NextResponse.json({ error: describeSupabaseError(error) }, { status: 500 });
 
   revalidatePath("/", "layout");
   return NextResponse.json({ ok: true });

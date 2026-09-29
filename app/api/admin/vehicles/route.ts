@@ -4,6 +4,7 @@ import { isAuthenticated } from "@/lib/auth";
 import { buildVehicleSlug } from "@/lib/format";
 import { adminAllSlugs, adminListVehicles } from "@/lib/supabase/queries";
 import { adminClient } from "@/lib/supabase/admin";
+import { describeSupabaseError } from "@/lib/supabase/errors";
 import { normaliseVehicle, validateVehicle } from "@/lib/vehicle-input";
 
 export async function GET() {
@@ -35,7 +36,7 @@ export async function POST(request: Request) {
     .select("id,slug")
     .single();
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return NextResponse.json({ error: describeSupabaseError(error) }, { status: 500 });
 
   revalidatePath("/");
   revalidatePath("/vozila");

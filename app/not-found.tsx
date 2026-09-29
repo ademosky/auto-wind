@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { Phone } from "lucide-react";
 
 export default function NotFound() {
   return (
@@ -13,20 +13,22 @@ export default function NotFound() {
       </p>
       <div className="mt-9 flex flex-wrap justify-center gap-4">
         <Link
-          href="/vozila"
+          href="/"
           className="inline-flex items-center gap-2 bg-gold-500 px-6 py-4 text-[12.5px] font-bold uppercase tracking-[0.16em] text-brand-950 transition-colors hover:bg-gold-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500/60"
         >
           Возила во понуда
         </Link>
         <Link
-          href="/"
+          href="/#kontakt"
           className="inline-flex items-center gap-2 border border-gold-500/40 px-6 py-4 text-[12.5px] font-semibold uppercase tracking-[0.16em] text-gold-100 transition-colors hover:border-gold-500 hover:bg-gold-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500/60"
         >
-          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-          Почетна
+          <Phone className="h-4 w-4" aria-hidden="true" />
+          Контакт
         </Link>
       </div>
     </div>
   );
 }
+
+
 

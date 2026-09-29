@@ -161,11 +161,7 @@ export default async function VehicleDetailPage({ params }: Params) {
 
       <nav aria-label="Патека" className="flex flex-wrap items-center gap-2 text-[11.5px] uppercase tracking-[0.18em]">
         <Link href="/" className="text-stone-2/50 transition-colors hover:text-gold-300">
-          Почетна
-        </Link>
-        <span className="text-gold-500/40">/</span>
-        <Link href="/vozila" className="text-stone-2/50 transition-colors hover:text-gold-300">
-          Возила
+          Возила во понуда
         </Link>
         <span className="text-gold-500/40">/</span>
         <span className="text-stone-2/75">{vehicleShortTitle(vehicle)}</span>
@@ -269,7 +265,7 @@ export default async function VehicleDetailPage({ params }: Params) {
           </div>
 
           <Link
-            href="/vozila"
+            href="/"
             className="mt-4 inline-flex items-center gap-2 text-[11.5px] font-semibold uppercase tracking-[0.2em] text-stone-2/55 transition-colors hover:text-gold-300"
           >
             <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
@@ -294,6 +290,8 @@ export default async function VehicleDetailPage({ params }: Params) {
     </div>
   );
 }
+
+
 
 
 

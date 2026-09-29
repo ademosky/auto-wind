@@ -16,11 +16,7 @@ npm install
 # 2. Постави ги поставките (види го делот „Поставки“ подолу)
 cp .env.example .env.local
 
-# 3. Постави ја базата (само при прво поставување):
-#    Supabase → SQL Editor → изврши ја содржината на supabase/schema.sql
-#    Детали и решавање на проблеми: supabase/README.md
-
-# 4. Стартувај
+# 3. Стартувај
 npm run dev
 ```
 
@@ -40,7 +36,7 @@ npm run build && npm run start
 |------|------|
 | Поставки и тајни клучеви | `.env.local` (се создава од `.env.example`) |
 | Најава во admin панелот | `.env.local` → `ADMIN_EMAIL` и `ADMIN_PASSWORD` |
-| База на податоци | Supabase — шемата е описана во `supabase/schema.sql`, детали во `supabase/README.md` |
+| База на податоци | Supabase — шемата е во `supabase/migrations/0001_init.sql`, опис и решавање на грешки во `supabase/README.md` |
 | Простор за фотографии | Supabase Storage, корпа (bucket) `vehicle-photos` |
 | Домашна страница | `app/page.tsx` |
 | Сите возила | `app/vozila/page.tsx` |
@@ -72,7 +68,9 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 
 **Важно:**
 
-- Клучевите од Supabase се во **Settings → API** во Supabase проектот.
+- Клучевите од Supabase се во **Settings → API Keys** во Supabase проектот (проектот **auto-wind**).
+- Провери дека врската работи со `npm run db:check` — ќе ти каже точно што недостасува.
+- Целата шема на базата и решавање на грешки: **[supabase/README.md](supabase/README.md)**.
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY` е публичен клуч — се користи на сајтот за читање на возилата.
 - `SUPABASE_SERVICE_ROLE_KEY` е **таен** клуч — се користи само на серверот за admin панелот. Никогаш не го ставај во GitHub и не го споделувај.
 - За промена на лозинката за admin: смени ја `ADMIN_PASSWORD` во `.env.local` и рестартирај. Така се враќа пристап и ако ја заборавиш.
@@ -112,4 +110,7 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 - **Supabase** — Postgres база, Storage за фотографии, row level security
 - **lucide-react** за икони
 - Оптимизација: `next/image`, AVIF/WEBP, статично генерирани страници на возила, `sitemap.xml`, `robots.txt`, Open Graph слика
+
+
+
 

@@ -65,7 +65,7 @@ export default async function AdminDashboardPage() {
         <div className="flex flex-wrap items-baseline justify-between gap-3">
           <h2 className="font-display text-[24px] text-stone">Сите возила</h2>
           <Link
-            href="/vozila"
+            href="/"
             className="inline-flex items-center gap-2 text-[11.5px] font-semibold uppercase tracking-[0.18em] text-gold-300 transition-colors hover:text-gold-100"
           >
             Види на сајтот
@@ -83,5 +83,6 @@ export default async function AdminDashboardPage() {
     </div>
   );
 }
+
 
 

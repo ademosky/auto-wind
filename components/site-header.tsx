@@ -7,9 +7,7 @@ import { useEffect, useState } from "react";
 import { Menu, Phone, X } from "lucide-react";
 
 const NAV = [
-  { href: "/", label: "Почетна" },
-  { href: "/vozila", label: "Возила" },
-  { href: "/#zosto-nie", label: "Зошто AUTO WIND" },
+  { href: "/", label: "Возила во понуда" },
   { href: "/#kontakt", label: "Контакт" },
 ];
 
@@ -145,4 +143,5 @@ export function SiteHeader({
     </header>
   );
 }
+
 
