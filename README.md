@@ -16,7 +16,11 @@ npm install
 # 2. Постави ги поставките (види го делот „Поставки“ подолу)
 cp .env.example .env.local
 
-# 3. Стартувај
+# 3. Постави ја базата (само при прво поставување):
+#    Supabase → SQL Editor → изврши ја содржината на supabase/schema.sql
+#    Детали и решавање на проблеми: supabase/README.md
+
+# 4. Стартувај
 npm run dev
 ```
 
@@ -36,7 +40,7 @@ npm run build && npm run start
 |------|------|
 | Поставки и тајни клучеви | `.env.local` (се создава од `.env.example`) |
 | Најава во admin панелот | `.env.local` → `ADMIN_EMAIL` и `ADMIN_PASSWORD` |
-| База на податоци | Supabase — шемата е описана во `supabase/schema.sql` |
+| База на податоци | Supabase — шемата е описана во `supabase/schema.sql`, детали во `supabase/README.md` |
 | Простор за фотографии | Supabase Storage, корпа (bucket) `vehicle-photos` |
 | Домашна страница | `app/page.tsx` |
 | Сите возила | `app/vozila/page.tsx` |
