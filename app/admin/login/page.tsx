@@ -43,8 +43,8 @@ export default function AdminLoginPage() {
   return (
     <div className="mx-auto flex w-full max-w-[520px] flex-col px-5 py-16 md:py-24">
       <div className="border border-gold-500/20 bg-brand-900/40 p-7 md:p-9">
-        <span className="relative mx-auto block h-11 w-[220px] overflow-hidden">
-          <Image src="/brand/auto-wind-logo.png" alt="AUTO WIND" fill sizes="220px" className="object-contain" />
+        <span className="relative mx-auto block h-14 w-[236px] overflow-hidden">
+          <Image src="/brand/auto-wind-logo.png" alt="AUTO WIND" fill sizes="236px" className="object-contain" />
         </span>
 
         <h1 className="mt-7 text-center font-display text-[26px] text-stone">Администрација</h1>
@@ -105,4 +105,5 @@ export default function AdminLoginPage() {
     </div>
   );
 }
+
 

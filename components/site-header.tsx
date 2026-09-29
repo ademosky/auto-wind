@@ -57,20 +57,20 @@ export function SiteHeader({
           : "border-b border-transparent"
       }`}
     >
-      <div className="mx-auto flex h-[74px] w-full max-w-[1280px] items-center justify-between px-5 md:px-10">
+      <div className="mx-auto flex h-20 w-full max-w-[1280px] items-center justify-between px-5 md:h-[88px] md:px-10">
         <Link
           href="/"
           aria-label="AUTO WIND — почетна"
           className="group flex shrink-0 items-center gap-3 transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500/60"
         >
-          <span className="relative block h-9 w-[178px] overflow-hidden md:h-10 md:w-[206px]">
+          <span className="relative block h-12 w-[202px] overflow-hidden md:h-14 md:w-[236px]">
             <Image
               src="/brand/auto-wind-logo.png"
               alt="AUTO WIND"
               fill
               priority
-              sizes="206px"
-              className="object-contain object-left"
+              sizes="236px"
+              className="object-contain object-left drop-shadow-[0_2px_10px_rgba(0,0,0,0.45)]"
             />
           </span>
         </Link>
@@ -143,5 +143,7 @@ export function SiteHeader({
     </header>
   );
 }
+
+
 
 
