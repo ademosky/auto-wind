@@ -1,5 +1,6 @@
 import { publicClient } from "./public";
 import { adminClient } from "./admin";
+import { describeSupabaseError } from "./errors";
 import {
   VEHICLE_LIST_COLUMNS,
   type SiteSettings,
@@ -28,7 +29,7 @@ export async function getListedVehicles(): Promise<VehicleWithImages[]> {
     .neq("status", "sold")
     .order("sort_order", { ascending: true })
     .order("created_at", { ascending: false });
-  if (error) throw new Error(error.message);
+  if (error) throw new Error(describeSupabaseError(error));
   return (data ?? []) as unknown as VehicleWithImages[];
 }
 
@@ -39,7 +40,7 @@ export async function getSoldVehicles(limit = 6): Promise<VehicleWithImages[]> {
     .eq("status", "sold")
     .order("updated_at", { ascending: false })
     .limit(limit);
-  if (error) throw new Error(error.message);
+  if (error) throw new Error(describeSupabaseError(error));
   return (data ?? []) as unknown as VehicleWithImages[];
 }
 
@@ -49,7 +50,7 @@ export async function getVehicleBySlug(slug: string): Promise<VehicleWithImages 
     .select(WITH_IMAGES)
     .eq("slug", slug)
     .maybeSingle();
-  if (error) throw new Error(error.message);
+  if (error) throw new Error(describeSupabaseError(error));
   return (data as unknown as VehicleWithImages) ?? null;
 }
 
@@ -58,7 +59,7 @@ export async function getAllSlugs(): Promise<{ slug: string; updated_at: string 
     .from("vehicles")
     .select("slug,updated_at")
     .order("updated_at", { ascending: false });
-  if (error) throw new Error(error.message);
+  if (error) throw new Error(describeSupabaseError(error));
   return (data ?? []) as { slug: string; updated_at: string }[];
 }
 
@@ -83,7 +84,7 @@ export async function adminListVehicles(): Promise<VehicleWithImages[]> {
     .select(WITH_IMAGES)
     .order("sort_order", { ascending: true })
     .order("created_at", { ascending: false });
-  if (error) throw new Error(error.message);
+  if (error) throw new Error(describeSupabaseError(error));
   return (data ?? []) as unknown as VehicleWithImages[];
 }
 
@@ -93,7 +94,7 @@ export async function adminGetVehicle(id: string): Promise<VehicleWithImages | n
     .select(WITH_IMAGES)
     .eq("id", id)
     .maybeSingle();
-  if (error) throw new Error(error.message);
+  if (error) throw new Error(describeSupabaseError(error));
   return (data as unknown as VehicleWithImages) ?? null;
 }
 
@@ -109,7 +110,7 @@ export async function adminCounts(): Promise<{
   sold: number;
 }> {
   const { data, error } = await adminClient().from("vehicles").select("status");
-  if (error) throw new Error(error.message);
+  if (error) throw new Error(describeSupabaseError(error));
   const rows = (data ?? []) as { status: string }[];
   return {
     total: rows.length,
