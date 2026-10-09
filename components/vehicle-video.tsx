@@ -26,7 +26,7 @@ export function VehicleVideo({ url, title }: { url: string; title: string }) {
         <button
           type="button"
           onClick={() => setPlaying(true)}
-          aria-label={`Пусти видео за ${title}`}
+          aria-label={`Видео за ${title}`}
           className="group absolute inset-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gold-500/60"
         >
           <Image
@@ -42,7 +42,7 @@ export function VehicleVideo({ url, title }: { url: string; title: string }) {
               <Play className="ml-1 h-7 w-7 text-gold-300" aria-hidden="true" />
             </span>
             <span className="text-[11px] font-semibold uppercase tracking-[0.24em] text-gold-200">
-              Пусти видео
+              Видео
             </span>
           </span>
         </button>
