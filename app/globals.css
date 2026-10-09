@@ -235,6 +235,46 @@
   padding: 0.4rem 0.75rem;
 }
 
+/* ---------- map ---------- */
+
+.aw-map .leaflet-container {
+  background: #0a3a26;
+  font-family: inherit;
+}
+.aw-map .leaflet-popup-content-wrapper {
+  background: #03170e;
+  color: #f6f3ec;
+  border: 1px solid rgba(201, 167, 90, 0.35);
+  border-radius: 0;
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.55);
+}
+.aw-map .leaflet-popup-tip {
+  background: #03170e;
+  border: 1px solid rgba(201, 167, 90, 0.35);
+}
+.aw-map .leaflet-popup-content {
+  margin: 12px 14px;
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+.aw-map .leaflet-bar a {
+  background: #03170e;
+  color: #c9a75a;
+  border-bottom-color: rgba(201, 167, 90, 0.25);
+}
+.aw-map .leaflet-bar a:hover {
+  background: #0a3a26;
+  color: #f8efcf;
+}
+.aw-map .leaflet-control-attribution {
+  background: rgba(3, 23, 14, 0.78);
+  color: rgba(246, 243, 236, 0.55);
+  font-size: 10px;
+}
+.aw-map .leaflet-control-attribution a {
+  color: rgba(201, 167, 90, 0.9);
+}
+
 /* ---------- mobile helpers ---------- */
 
 /* keeps fixed bottom bars clear of the iPhone home indicator */

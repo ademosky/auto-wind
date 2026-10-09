@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Database } from "lucide-react";
+import { MapPin } from "lucide-react";
+import { BusinessMap } from "@/components/business-map";
 import { ContactButtons } from "@/components/contact-buttons";
+import { BUSINESS, GOOGLE_MAPS_LINK } from "@/lib/site";
 import { VehicleBrowser } from "@/components/vehicle-browser";
 import type { VehicleWithImages } from "@/lib/types";
 import { getListedVehicles, getSettings } from "@/lib/supabase/queries";
@@ -110,6 +113,30 @@ export default async function HomePage() {
         )}
       </section>
 
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "AutoDealer",
+            name: BUSINESS.name,
+            address: {
+              "@type": "PostalAddress",
+              streetAddress: BUSINESS.addressShort,
+              addressLocality: "Битола",
+              addressCountry: "MK",
+            },
+            geo: {
+              "@type": "GeoCoordinates",
+              latitude: BUSINESS.latitude,
+              longitude: BUSINESS.longitude,
+            },
+            telephone: settings.phone_e164 ?? undefined,
+            url: process.env.NEXT_PUBLIC_SITE_URL ?? undefined,
+          }),
+        }}
+      />
+
       <section id="kontakt" className="scroll-mt-24 border-t border-gold-500/15">
         <div className="mx-auto w-full max-w-[1280px] px-4 py-12 sm:px-5 md:px-10 md:py-16">
           <div className="aw-panel grid gap-7 p-5 sm:gap-10 sm:p-8 md:p-10 lg:grid-cols-[1fr_1fr] lg:items-center">
@@ -134,6 +161,32 @@ export default async function HomePage() {
               <p className="text-center text-[12.5px] text-stone-2/50">
                 Или погледни го возилото и кликни „Целосни детали“ за сите податоци и фотографии.
               </p>
+
+              {/* адресата — веднаш под телефонскиот број */}
+              <a
+                href={GOOGLE_MAPS_LINK}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex items-start gap-4 border border-gold-500/20 bg-brand-950/40 px-4 py-4 transition-colors hover:border-gold-500/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500/50 sm:px-5"
+              >
+                <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-gold-500" aria-hidden="true" />
+                <span className="min-w-0">
+                  <span className="block text-[11px] font-semibold uppercase tracking-[0.24em] text-gold-500">
+                    Адреса
+                  </span>
+                  <span className="mt-1.5 block text-[16px] leading-snug text-stone sm:text-[15.5px]">
+                    {BUSINESS.addressFull}
+                  </span>
+                  <span className="mt-1.5 inline-block text-[12.5px] text-stone-2/55 underline-offset-4 group-hover:text-gold-300 group-hover:underline">
+                    Отвори во Google Maps ›
+                  </span>
+                </span>
+              </a>
+            </div>
+
+            {/* карта на локацијата */}
+            <div className="lg:col-span-2">
+              <BusinessMap />
             </div>
           </div>
         </div>
