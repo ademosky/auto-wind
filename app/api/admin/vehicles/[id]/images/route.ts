@@ -4,6 +4,7 @@ import { isAuthenticated } from "@/lib/auth";
 import { adminGetVehicle } from "@/lib/supabase/queries";
 import { adminClient, PHOTO_BUCKET } from "@/lib/supabase/admin";
 import { describeSupabaseError } from "@/lib/supabase/errors";
+import { imageSize } from "@/lib/image-size";
 
 type Ctx = { params: Promise<{ id: string }> };
 
@@ -61,6 +62,7 @@ export async function POST(request: Request, { params }: Ctx) {
 
     const path = `${id}/${crypto.randomUUID()}.${extFor(file)}`;
     const buffer = Buffer.from(await file.arrayBuffer());
+    const size = imageSize(buffer);
 
     const { error: uploadError } = await adminClient()
       .storage.from(PHOTO_BUCKET)
@@ -81,6 +83,8 @@ export async function POST(request: Request, { params }: Ctx) {
         url: publicUrl.publicUrl,
         storage_path: path,
         sort_order: existingCount + i,
+        width: size?.width ?? null,
+        height: size?.height ?? null,
         is_cover: isCover,
       })
       .select("id,url")

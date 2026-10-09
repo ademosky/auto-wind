@@ -47,6 +47,10 @@ export function VehicleCard({
   const sold = vehicle.status === "sold";
   const reserved = vehicle.status === "reserved";
   const title = vehicleTitle(vehicle);
+  const coverRow =
+    (vehicle.vehicle_images ?? []).find((i) => i.url === cover) ??
+    (vehicle.vehicle_images ?? []).find((i) => i.is_cover);
+  const portraitCover = (coverRow?.height ?? 0) > (coverRow?.width ?? 0);
 
   return (
     <article className="aw-card group relative flex h-full flex-col overflow-hidden border border-gold-500/18 bg-brand-900/45 transition-colors duration-300 hover:border-gold-500/45 focus-within:border-gold-500/45">
@@ -55,6 +59,17 @@ export function VehicleCard({
         aria-label={`${title} — отвори детали`}
         className="aw-card-media relative block aspect-[4/3] overflow-hidden bg-brand-800"
       >
+        {cover && portraitCover ? (
+          <Image
+            src={cover}
+            alt=""
+            aria-hidden="true"
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            className="scale-110 object-cover opacity-40 blur-2xl"
+          />
+        ) : null}
+
         {cover ? (
           <Image
             src={cover}
@@ -63,7 +78,7 @@ export function VehicleCard({
             priority={priority}
             fetchPriority={priority ? "high" : "auto"}
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            className={`object-cover ${sold ? "grayscale-[85%]" : ""}`}
+            className={`${portraitCover ? "object-contain" : "object-cover"} ${sold ? "grayscale-[85%]" : ""}`}
           />
         ) : (
           <VehiclePlaceholder label={vehicleShortTitle(vehicle)} />

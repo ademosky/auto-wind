@@ -115,7 +115,12 @@ export default async function VehicleDetailPage({ params }: Params) {
 
   if (!vehicle) notFound();
 
-  const images = sortImages(vehicle.vehicle_images).map((i) => ({ id: i.id, url: i.url }));
+  const images = sortImages(vehicle.vehicle_images).map((i) => ({
+    id: i.id,
+    url: i.url,
+    width: i.width,
+    height: i.height,
+  }));
   const title = vehicleTitle(vehicle);
   const sold = vehicle.status === "sold";
   const summary = summaryLine(vehicle);

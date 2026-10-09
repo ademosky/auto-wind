@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, Expand, X } from "lucide-react";
 
-type Img = { id: string; url: string };
+type Img = { id: string; url: string; width?: number | null; height?: number | null };
 
 export function VehicleGallery({ images, alt }: { images: Img[]; alt: string }) {
   const [index, setIndex] = useState(0);
@@ -45,6 +45,8 @@ export function VehicleGallery({ images, alt }: { images: Img[]; alt: string }) 
   }
 
   const current = images[Math.min(index, total - 1)];
+  // portrait photos are shown in full; they would lose the roof and wheels if cropped
+  const portrait = (current?.height ?? 0) > (current?.width ?? 0);
 
   const onTouchStart = (e: React.TouchEvent) => {
     const t = e.touches[0];
@@ -66,10 +68,21 @@ export function VehicleGallery({ images, alt }: { images: Img[]; alt: string }) 
   return (
     <div>
       <div
-        className="relative aspect-[4/3] touch-pan-y overflow-hidden border border-gold-500/20 bg-brand-800 sm:aspect-[16/10]"
+        className="relative aspect-[4/3] touch-pan-y overflow-hidden border border-gold-500/20 bg-brand-800"
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
+        {portrait ? (
+          <Image
+            src={current.url}
+            alt=""
+            aria-hidden="true"
+            fill
+            sizes="100vw"
+            className="scale-110 object-cover opacity-40 blur-2xl"
+          />
+        ) : null}
+
         <Image
           key={current.id}
           src={current.url}
@@ -77,8 +90,8 @@ export function VehicleGallery({ images, alt }: { images: Img[]; alt: string }) 
           fill
           priority={index === 0}
           fetchPriority={index === 0 ? "high" : "auto"}
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 62vw"
-          className="object-cover"
+          sizes="(max-width: 1024px) 100vw, 62vw"
+          className={portrait ? "object-contain" : "object-cover"}
         />
 
         {total > 1 ? (

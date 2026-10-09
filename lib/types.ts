@@ -5,6 +5,8 @@ export interface VehicleImage {
   vehicle_id: string;
   url: string;
   storage_path: string | null;
+  width: number | null;
+  height: number | null;
   sort_order: number;
   is_cover: boolean;
   created_at: string;

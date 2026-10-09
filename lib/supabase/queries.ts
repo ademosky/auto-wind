@@ -8,7 +8,7 @@ import {
   type VehicleWithImages,
 } from "../types";
 
-const WITH_IMAGES = `${VEHICLE_LIST_COLUMNS}, vehicle_images(id,vehicle_id,url,storage_path,sort_order,is_cover,created_at)`;
+const WITH_IMAGES = `${VEHICLE_LIST_COLUMNS}, vehicle_images(id,vehicle_id,url,storage_path,width,height,sort_order,is_cover,created_at)`;
 
 export const DEFAULT_SETTINGS: SiteSettings = {
   id: 1,
