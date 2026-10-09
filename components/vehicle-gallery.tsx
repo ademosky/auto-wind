@@ -68,7 +68,9 @@ export function VehicleGallery({ images, alt }: { images: Img[]; alt: string }) 
   return (
     <div>
       <div
-        className="relative aspect-[4/3] touch-pan-y overflow-hidden border border-gold-500/20 bg-brand-800"
+        className={`relative touch-pan-y overflow-hidden border border-gold-500/20 bg-brand-800 transition-[aspect-ratio] duration-300 ${
+          portrait ? "aspect-[3/4]" : "aspect-[4/3]"
+        }`}
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
