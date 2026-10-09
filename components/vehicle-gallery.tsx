@@ -9,11 +9,9 @@ type Img = { id: string; url: string; width?: number | null; height?: number | n
 /**
  * Галерија на возилото.
  *
- * — Главната фотографија е во секогаш ист кадар (4:3) за да не скока страницата.
- * — Секоја фотографија се гледа во целост: вертикалните не се сечат, туку добиваат
- *   замргната позадина од самата слика.
- * — Сите фотографии се под главната, како полици што се допираат — допир отвора
- *   целосен приказ на таа фотографија.
+ * Главната фотографија се прикажува во својот природен формат (преку цела ширина),
+ * па никогаш не се сече и не скока чудно. Сите фотографии стојат под неа како
+ * полици — допир на која било отвора целосен приказ.
  */
 export function VehicleGallery({ images, alt }: { images: Img[]; alt: string }) {
   const [index, setIndex] = useState(0);
@@ -23,15 +21,10 @@ export function VehicleGallery({ images, alt }: { images: Img[]; alt: string }) 
   const total = images.length;
 
   const go = useCallback(
-    (dir: 1 | -1) => {
-      setIndex((i) => (i + dir + (images.length || 1)) % (images.length || 1));
-    },
+    (dir: 1 | -1) => setIndex((i) => (i + dir + (images.length || 1)) % (images.length || 1)),
     [images.length],
   );
 
-  const select = useCallback((i: number) => setIndex(i), []);
-
-  // keep the selected photo in view in the strip below
   useEffect(() => {
     const el = strip.current?.querySelector<HTMLElement>(`[data-thumb="${index}"]`);
     el?.scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" });
@@ -55,14 +48,15 @@ export function VehicleGallery({ images, alt }: { images: Img[]; alt: string }) 
 
   if (total === 0) {
     return (
-      <div className="relative flex aspect-[4/3] items-center justify-center border border-gold-500/20 bg-brand-800">
+      <div className="flex aspect-[4/3] items-center justify-center border border-gold-500/20 bg-brand-800">
         <span className="text-[11px] uppercase tracking-[0.3em] text-gold-500/60">Фотографии во подготовка</span>
       </div>
     );
   }
 
   const current = images[Math.min(index, total - 1)];
-  const portrait = (current?.height ?? 0) > (current?.width ?? 0);
+  const currentW = current.width && current.width > 0 ? current.width : 1200;
+  const currentH = current.height && current.height > 0 ? current.height : 900;
 
   const onTouchStart = (e: React.TouchEvent) => {
     const t = e.touches[0];
@@ -80,43 +74,21 @@ export function VehicleGallery({ images, alt }: { images: Img[]; alt: string }) 
     go(dx < 0 ? 1 : -1);
   };
 
-  /** Една слика: цела во кадарот, со замргнат фон ако не е истиот формат. */
-  const Frame = ({ img, label, priority }: { img: Img; label: string; priority?: boolean }) => {
-    const tall = (img.height ?? 0) > (img.width ?? 0);
-    return (
-      <>
-        {tall ? (
-          <Image
-            src={img.url}
-            alt=""
-            aria-hidden="true"
-            fill
-            sizes="100vw"
-            className="scale-125 object-cover opacity-35 blur-3xl"
-          />
-        ) : null}
-        <Image
-          key={img.id}
-          src={img.url}
-          alt={label}
-          fill
-          priority={priority}
-          fetchPriority={priority ? "high" : "auto"}
-          sizes="(max-width: 1024px) 100vw, 62vw"
-          className={tall ? "object-contain" : "object-cover"}
-        />
-      </>
-    );
-  };
-
   return (
     <div>
-      <div
-        className="relative aspect-[4/3] w-full touch-pan-y overflow-hidden border border-gold-500/20 bg-brand-800"
-        onTouchStart={onTouchStart}
-        onTouchEnd={onTouchEnd}
-      >
-        <Frame img={current} label={`${alt} — фотографија ${index + 1}`} priority={index === 0} />
+      {/* the photo keeps its own proportions: it is shown whole, never cropped */}
+      <div className="relative border border-gold-500/20 bg-brand-800" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+        <Image
+          key={current.id}
+          src={current.url}
+          alt={`${alt} — фотографија ${index + 1}`}
+          width={currentW}
+          height={currentH}
+          priority={index === 0}
+          fetchPriority={index === 0 ? "high" : "auto"}
+          sizes="(max-width: 1024px) 100vw, 62vw"
+          className="block h-auto w-full"
+        />
 
         <button
           type="button"
@@ -125,8 +97,8 @@ export function VehicleGallery({ images, alt }: { images: Img[]; alt: string }) 
           className="absolute inset-0 z-10 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gold-500/60"
         />
 
-        <span className="pointer-events-none absolute right-3 top-3 z-20 inline-flex h-10 items-center gap-2 border border-gold-500/30 bg-brand-950/70 px-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-gold-100 backdrop-blur">
-          <Expand className="h-4 w-4" aria-hidden="true" />
+        <span className="pointer-events-none absolute right-3 top-3 z-20 inline-flex h-9 items-center gap-2 border border-gold-500/30 bg-brand-950/70 px-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-gold-100 backdrop-blur">
+          <Expand className="h-3.5 w-3.5" aria-hidden="true" />
           Целосно
         </span>
 
@@ -160,17 +132,14 @@ export function VehicleGallery({ images, alt }: { images: Img[]; alt: string }) 
 
       {total > 1 ? (
         <div className="mt-3">
-          <div
-            ref={strip}
-            className="aw-no-scrollbar flex snap-x snap-mandatory gap-2.5 overflow-x-auto pb-1"
-          >
+          <div ref={strip} className="aw-no-scrollbar flex snap-x snap-mandatory gap-2.5 overflow-x-auto pb-1">
             {images.map((img, i) => (
               <button
                 key={img.id}
                 type="button"
                 data-thumb={i}
                 onClick={() => {
-                  select(i);
+                  setIndex(i);
                   setOpen(true);
                 }}
                 aria-label={`Отвори фотографија ${i + 1} од ${total}`}
@@ -180,12 +149,6 @@ export function VehicleGallery({ images, alt }: { images: Img[]; alt: string }) 
                 }`}
               >
                 <Image src={img.url} alt="" fill sizes="120px" className="object-cover" />
-                {(img.height ?? 0) > (img.width ?? 0) ? (
-                  <span
-                    className="pointer-events-none absolute bottom-1 right-1 h-4 w-3 border border-gold-500/40 bg-brand-950/70"
-                    aria-hidden="true"
-                  />
-                ) : null}
               </button>
             ))}
           </div>
@@ -217,11 +180,7 @@ export function VehicleGallery({ images, alt }: { images: Img[]; alt: string }) 
             </button>
           </div>
 
-          <div
-            className="relative flex-1"
-            onTouchStart={onTouchStart}
-            onTouchEnd={onTouchEnd}
-          >
+          <div className="relative flex-1" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
             <Image
               key={`big-${current.id}`}
               src={current.url}
@@ -259,7 +218,7 @@ export function VehicleGallery({ images, alt }: { images: Img[]; alt: string }) 
                 <button
                   key={`pick-${img.id}`}
                   type="button"
-                  onClick={() => select(i)}
+                  onClick={() => setIndex(i)}
                   aria-label={`Прикажи фотографија ${i + 1}`}
                   className={`relative h-14 w-20 shrink-0 cursor-pointer overflow-hidden border ${
                     i === index ? "border-gold-500" : "border-gold-500/20 opacity-60"
