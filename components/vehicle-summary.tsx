@@ -23,6 +23,8 @@ export function VehicleSummary({
   headingLevel?: "h1" | "h2";
 }) {
   const sold = vehicle.status === "sold";
+  const versionIsRedundant =
+    !!vehicle.version && title.toLowerCase().trim().endsWith(vehicle.version.toLowerCase().trim());
 
   const headingClass =
     "mt-4 font-display text-[27px] leading-tight text-stone sm:text-[30px] md:mt-5 md:text-[36px]";
@@ -50,7 +52,9 @@ export function VehicleSummary({
         <h2 className={headingClass}>{title}</h2>
       )}
 
-      {vehicle.version ? <p className="mt-2 text-[15px] text-stone-2/65">{vehicle.version}</p> : null}
+      {vehicle.version && !versionIsRedundant ? (
+        <p className="mt-2 text-[15px] text-stone-2/65">{vehicle.version}</p>
+      ) : null}
       <p className="mt-3 text-[14.5px] leading-relaxed text-stone-2/75">{summary}</p>
 
       <div className="aw-hairline my-5 md:my-6" />

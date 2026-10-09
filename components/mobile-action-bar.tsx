@@ -38,8 +38,8 @@ export function MobileActionBar({
 
   return (
     <div
-      className={`aw-safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-gold-500/25 bg-brand-950/95 backdrop-blur-xl transition-transform duration-300 lg:hidden ${
-        visible ? "translate-y-0" : "pointer-events-none translate-y-full"
+      className={`aw-safe-bottom fixed inset-x-3 bottom-[46px] z-40 border border-gold-500/25 bg-brand-950/96 backdrop-blur-xl transition-transform duration-300 lg:hidden ${
+        visible ? "translate-y-0" : "pointer-events-none translate-y-[150%]"
       }`}
       aria-hidden={!visible}
     >

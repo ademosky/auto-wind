@@ -116,8 +116,18 @@ export function VehicleGallery({ images, alt }: { images: Img[]; alt: string }) 
         </span>
 
         {total > 1 ? (
-          <span className="absolute bottom-3 left-1/2 -translate-x-1/2 text-[11px] uppercase tracking-[0.18em] text-stone-2/55 sm:hidden">
-            повлечи за следна
+          <span
+            className="absolute bottom-3.5 left-1/2 flex -translate-x-1/2 items-center gap-1.5 sm:hidden"
+            aria-hidden="true"
+          >
+            {images.map((img, i) => (
+              <span
+                key={img.id}
+                className={`h-1.5 rounded-full transition-all duration-300 ${
+                  i === index ? "w-4 bg-gold-300" : "w-1.5 bg-stone-2/35"
+                }`}
+              />
+            ))}
           </span>
         ) : null}
       </div>

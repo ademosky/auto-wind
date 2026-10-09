@@ -163,7 +163,7 @@ export default async function VehicleDetailPage({ params }: Params) {
   };
 
   return (
-    <div className="mx-auto w-full max-w-[1280px] px-4 pb-28 pt-5 sm:px-5 md:px-10 md:pb-14 md:pt-10 lg:pb-16">
+    <div className="mx-auto w-full max-w-[1280px] px-4 pb-44 pt-5 sm:px-5 md:px-10 md:pb-14 md:pt-10 lg:pb-16">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       <nav aria-label="Патека" className="flex items-center gap-2 text-[11px] uppercase tracking-[0.16em] sm:text-[11.5px]">
