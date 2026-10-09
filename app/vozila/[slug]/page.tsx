@@ -181,7 +181,7 @@ export default async function VehicleDetailPage({ params }: Params) {
 
       <div className="mt-5 grid gap-8 md:mt-8 lg:grid-cols-[1.55fr_1fr] lg:items-start lg:gap-12">
         {/* ---------- main column ---------- */}
-        <div>
+        <div className="min-w-0">
           <VehicleGallery images={images} alt={title} />
 
           {/* on phones the name, price and contact buttons come right after the photos */}
@@ -266,7 +266,7 @@ export default async function VehicleDetailPage({ params }: Params) {
         </div>
 
         {/* ---------- sticky column (desktop only) ---------- */}
-        <aside className="hidden lg:sticky lg:top-24 lg:block">
+        <aside className="hidden min-w-0 lg:sticky lg:top-24 lg:block">
           <VehicleSummary
             vehicle={vehicle}
             settings={settings}

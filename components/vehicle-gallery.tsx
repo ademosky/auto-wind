@@ -75,9 +75,9 @@ export function VehicleGallery({ images, alt }: { images: Img[]; alt: string }) 
   };
 
   return (
-    <div>
+    <div className="min-w-0">
       {/* the photo keeps its own proportions: it is shown whole, never cropped */}
-      <div className="relative border border-gold-500/20 bg-brand-800" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+      <div className="relative w-full min-w-0 border border-gold-500/20 bg-brand-800" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
         <Image
           key={current.id}
           src={current.url}
@@ -131,8 +131,8 @@ export function VehicleGallery({ images, alt }: { images: Img[]; alt: string }) 
       </div>
 
       {total > 1 ? (
-        <div className="mt-3">
-          <div ref={strip} className="aw-no-scrollbar flex snap-x snap-mandatory gap-2.5 overflow-x-auto pb-1">
+        <div className="mt-3 w-full min-w-0 overflow-hidden">
+          <div ref={strip} className="aw-no-scrollbar flex w-full min-w-0 snap-x snap-mandatory gap-2.5 overflow-x-auto pb-1">
             {images.map((img, i) => (
               <button
                 key={img.id}
