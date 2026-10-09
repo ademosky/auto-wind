@@ -107,6 +107,9 @@ export function BusinessMap({ className = "" }: { className?: string }) {
           className="aw-map h-[280px] w-full sm:h-[320px]"
           role="region"
           aria-label={`Карта — ${BUSINESS.addressFull}`}
+          data-lat={BUSINESS.latitude}
+          data-lng={BUSINESS.longitude}
+          data-address={BUSINESS.addressFull}
         />
 
         {!ready && !failed ? (
