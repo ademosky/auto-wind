@@ -5,7 +5,7 @@ import { buildVehicleSlug } from "@/lib/format";
 import { adminAllSlugs, adminGetVehicle } from "@/lib/supabase/queries";
 import { adminClient, PHOTO_BUCKET } from "@/lib/supabase/admin";
 import { describeSupabaseError } from "@/lib/supabase/errors";
-import { normaliseVehicle, validateVehicle } from "@/lib/vehicle-input";
+import { normaliseVehicle, validateVehicle, validateVehicleVideo } from "@/lib/vehicle-input";
 
 type Ctx = { params: Promise<{ id: string }> };
 
@@ -42,6 +42,8 @@ export async function PATCH(request: Request, { params }: Ctx) {
   const payload = normaliseVehicle({ ...body });
   const problem = validateVehicle(payload);
   if (problem) return NextResponse.json({ error: problem }, { status: 400 });
+  const videoProblem = validateVehicleVideo(body);
+  if (videoProblem) return NextResponse.json({ error: videoProblem }, { status: 400 });
 
   const taken = (await adminAllSlugs()).filter((s) => s !== existing.slug);
   const slug = buildVehicleSlug(payload.brand, payload.model, payload.year, taken);
@@ -77,5 +79,6 @@ export async function DELETE(_request: Request, { params }: Ctx) {
   await refresh(existing.slug);
   return NextResponse.json({ ok: true });
 }
+
 
 

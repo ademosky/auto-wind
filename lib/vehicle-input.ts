@@ -1,4 +1,5 @@
 import type { VehicleStatus } from "./types";
+import { canonicalYouTubeUrl, isYouTubeUrl } from "./youtube";
 
 const STATUSES: VehicleStatus[] = ["available", "reserved", "sold"];
 
@@ -52,6 +53,7 @@ export interface NormalisedVehicle {
   status: VehicleStatus;
   featured: boolean;
   sort_order: number;
+  video_url: string | null;
 }
 
 export function normaliseVehicle(input: Record<string, unknown>): NormalisedVehicle {
@@ -83,6 +85,7 @@ export function normaliseVehicle(input: Record<string, unknown>): NormalisedVehi
     status,
     featured: input.featured === true || input.featured === "true",
     sort_order: toNumber(input.sort_order) ?? 0,
+    video_url: canonicalYouTubeUrl(toText(input.video_url)),
   };
 }
 
@@ -94,4 +97,21 @@ export function validateVehicle(v: NormalisedVehicle): string | null {
   }
   return null;
 }
+
+/**
+ * Проверка на суровиот внес за видеото (пред канонизација).
+ * Ако полето е празно — ништо не се проверува.
+ */
+export function validateVehicleVideo(input: Record<string, unknown>): string | null {
+  const raw = input.video_url;
+  if (raw === null || raw === undefined) return null;
+  const text = String(raw).trim();
+  if (!text) return null;
+  if (!isYouTubeUrl(text)) {
+    return "Линкот не е препознаен како YouTube видео. Копирај го линкот директно од YouTube (Сподели → Копирај линк).";
+  }
+  return null;
+}
+
+
 

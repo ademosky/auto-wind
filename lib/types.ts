@@ -35,6 +35,7 @@ export interface Vehicle {
   featured: boolean;
   sort_order: number;
   cover_url: string | null;
+  video_url: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -55,11 +56,12 @@ export interface SiteSettings {
 }
 
 export const VEHICLE_LIST_COLUMNS =
-  "id,slug,brand,model,version,year,price_eur,price_mkd,mileage_km,fuel,transmission,engine,power_kw,power_hp,drive,color,euro_standard,registration,description,equipment,status,featured,sort_order,cover_url,created_at,updated_at";
+  "id,slug,brand,model,version,year,price_eur,price_mkd,mileage_km,fuel,transmission,engine,power_kw,power_hp,drive,color,euro_standard,registration,description,equipment,status,featured,sort_order,cover_url,video_url,created_at,updated_at";
 
 export const STATUS_LABELS: Record<VehicleStatus, string> = {
   available: "Достапно",
   reserved: "Резервирано",
   sold: "Продадено",
 };
+
 

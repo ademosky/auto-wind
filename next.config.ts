@@ -15,6 +15,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: supabaseHost },
       { protocol: "https", hostname: "**.supabase.co" },
       { protocol: "https", hostname: "uploads.codewords.ai" },
+      { protocol: "https", hostname: "i.ytimg.com" },
     ],
     formats: ["image/avif", "image/webp"],
     deviceSizes: [360, 480, 640, 828, 1080, 1280, 1600, 1920],
@@ -22,4 +23,5 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+
 

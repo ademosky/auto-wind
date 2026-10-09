@@ -293,6 +293,33 @@ export function VehicleForm({ vehicle }: { vehicle?: VehicleWithImages | null })
         </div>
       </fieldset>
 
+      <fieldset className={group}>
+        <legend className={legend}>Видео (YouTube)</legend>
+        <p className="mt-3 text-[13.5px] text-stone-2/55">
+          Ако имаш видео од возилото на YouTube, стави го линкот тука — ќе се прикаже на страницата на
+          возилото, веднаш под фотографиите. Полето може да остане празно.
+        </p>
+        <div className="mt-5 grid gap-4">
+          <div>
+            <label className={label} htmlFor="video_url">
+              YouTube линк
+            </label>
+            <input
+              id="video_url"
+              type="url"
+              inputMode="url"
+              className={field}
+              value={String(form.video_url)}
+              onChange={(e) => set("video_url", e.target.value)}
+              placeholder="https://www.youtube.com/watch?v=..."
+            />
+            <p className="mt-2 text-[12.5px] text-stone-2/45">
+              Прифаќа и youtu.be и /shorts линкови. Друго не се прифаќа.
+            </p>
+          </div>
+        </div>
+      </fieldset>
+
       {error ? (
         <p role="alert" className="border border-red-500/40 bg-red-500/10 px-4 py-3 text-[14px] text-red-200">
           {error}
@@ -326,4 +353,5 @@ export function VehicleForm({ vehicle }: { vehicle?: VehicleWithImages | null })
     </form>
   );
 }
+
 

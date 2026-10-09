@@ -5,7 +5,7 @@ import { buildVehicleSlug } from "@/lib/format";
 import { adminAllSlugs, adminListVehicles } from "@/lib/supabase/queries";
 import { adminClient } from "@/lib/supabase/admin";
 import { describeSupabaseError } from "@/lib/supabase/errors";
-import { normaliseVehicle, validateVehicle } from "@/lib/vehicle-input";
+import { normaliseVehicle, validateVehicle, validateVehicleVideo } from "@/lib/vehicle-input";
 
 export async function GET() {
   if (!(await isAuthenticated())) {
@@ -26,6 +26,8 @@ export async function POST(request: Request) {
   const payload = normaliseVehicle(body);
   const problem = validateVehicle(payload);
   if (problem) return NextResponse.json({ error: problem }, { status: 400 });
+  const videoProblem = validateVehicleVideo(body);
+  if (videoProblem) return NextResponse.json({ error: videoProblem }, { status: 400 });
 
   const taken = await adminAllSlugs();
   const slug = buildVehicleSlug(payload.brand, payload.model, payload.year, taken);
@@ -44,4 +46,5 @@ export async function POST(request: Request) {
 
   return NextResponse.json({ ok: true, vehicle: data });
 }
+
 

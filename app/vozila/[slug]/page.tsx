@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { ContactButtons } from "@/components/contact-buttons";
 import { VehicleGallery } from "@/components/vehicle-gallery";
+import { VehicleVideo } from "@/components/vehicle-video";
 import { VehicleCard } from "@/components/vehicle-card";
 import {
   coverOf,
@@ -172,6 +173,15 @@ export default async function VehicleDetailPage({ params }: Params) {
         <div className="order-2 lg:order-1">
           <VehicleGallery images={images} alt={title} />
 
+          {vehicle.video_url ? (
+            <section className="mt-12">
+              <h2 className="font-display text-[26px] text-stone md:text-[30px]">Видео од возилото</h2>
+              <div className="mt-5">
+                <VehicleVideo url={vehicle.video_url} title={title} />
+              </div>
+            </section>
+          ) : null}
+
           <section className="mt-12">
             <h2 className="font-display text-[26px] text-stone md:text-[30px]">Спецификации</h2>
             <dl className="mt-5 grid border-t border-gold-500/20 sm:grid-cols-2 sm:gap-x-10 [&>div:nth-child(-n+2)]:sm:border-t-0">
@@ -290,6 +300,7 @@ export default async function VehicleDetailPage({ params }: Params) {
     </div>
   );
 }
+
 
 
 
