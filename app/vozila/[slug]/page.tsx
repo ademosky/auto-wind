@@ -4,9 +4,9 @@ import { notFound } from "next/navigation";
 import {
   ArrowLeft,
   CalendarDays,
+  Car,
   Check,
   Cog,
-  Droplet,
   FileText,
   Fuel,
   Gauge,
@@ -15,8 +15,9 @@ import {
   Route,
   Zap,
 } from "lucide-react";
-import { ContactButtons } from "@/components/contact-buttons";
+import { MobileActionBar } from "@/components/mobile-action-bar";
 import { VehicleGallery } from "@/components/vehicle-gallery";
+import { VehicleSummary } from "@/components/vehicle-summary";
 import { VehicleVideo } from "@/components/vehicle-video";
 import { VehicleCard } from "@/components/vehicle-card";
 import {
@@ -25,10 +26,11 @@ import {
   formatNumber,
   formatPriceEur,
   sortImages,
+  telHref,
   vehicleShortTitle,
   vehicleTitle,
 } from "@/lib/format";
-import { STATUS_LABELS, type VehicleWithImages } from "@/lib/types";
+import type { VehicleWithImages } from "@/lib/types";
 import { getAllSlugs, getListedVehicles, getSettings, getVehicleBySlug } from "@/lib/supabase/queries";
 
 export const revalidate = 300;
@@ -85,21 +87,21 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   };
 }
 
-function SpecRow({
-  icon: Icon,
-  label,
-  value,
-}: {
-  icon: typeof Gauge;
-  label: string;
-  value: string;
-}) {
+function SpecRow({ icon: Icon, label, value }: { icon: typeof Gauge; label: string; value: string }) {
   return (
-    <div className="flex items-start gap-4 border-b border-gold-500/12 py-4">
-      <Icon className="mt-0.5 h-4 w-4 shrink-0 text-gold-500/80" aria-hidden="true" />
-      <dt className="w-[46%] text-[13px] uppercase tracking-[0.12em] text-stone-2/55">{label}</dt>
-      <dd className="flex-1 text-[15px] font-medium text-stone">{value}</dd>
+    <div className="flex items-start gap-3 border-b border-gold-500/12 py-3.5 sm:gap-4 sm:py-4">
+      <Icon className="mt-0.5 h-4 w-4 shrink-0 text-gold-500/80 sm:h-4 sm:w-4" aria-hidden="true" />
+      <dt className="w-[42%] shrink-0 text-[12.5px] uppercase tracking-[0.1em] text-stone-2/55 sm:w-[46%] sm:text-[13px] sm:tracking-[0.12em]">
+        {label}
+      </dt>
+      <dd className="flex-1 text-[15.5px] font-medium text-stone sm:text-[15px]">{value}</dd>
     </div>
+  );
+}
+
+function SectionHeading({ children }: { children: React.ReactNode }) {
+  return (
+    <h2 className="font-display text-[23px] leading-tight text-stone sm:text-[26px] md:text-[30px]">{children}</h2>
   );
 }
 
@@ -116,6 +118,10 @@ export default async function VehicleDetailPage({ params }: Params) {
   const images = sortImages(vehicle.vehicle_images).map((i) => ({ id: i.id, url: i.url }));
   const title = vehicleTitle(vehicle);
   const sold = vehicle.status === "sold";
+  const summary = summaryLine(vehicle);
+  const phoneHref = telHref(settings.phone_e164) || null;
+  const whatsappHref = settings.whatsapp ? `https://wa.me/${settings.whatsapp.replace(/[^0-9]/g, "")}` : null;
+
   const similar = listed
     .filter((v) => v.slug !== vehicle.slug)
     .sort((a, b) => (a.brand === vehicle.brand ? -1 : 0) - (b.brand === vehicle.brand ? -1 : 0))
@@ -144,7 +150,7 @@ export default async function VehicleDetailPage({ params }: Params) {
       ? { "@type": "QuantitativeValue", value: vehicle.mileage_km, unitCode: "KMT" }
       : undefined,
     image: images.map((i) => i.url),
-    description: vehicle.description ?? summaryLine(vehicle),
+    description: vehicle.description ?? summary,
     itemCondition: "https://schema.org/UsedCondition",
     offers: vehicle.price_eur
       ? {
@@ -157,34 +163,45 @@ export default async function VehicleDetailPage({ params }: Params) {
   };
 
   return (
-    <div className="mx-auto w-full max-w-[1280px] px-5 py-10 md:px-10 md:py-14">
+    <div className="mx-auto w-full max-w-[1280px] px-4 pb-28 pt-5 sm:px-5 md:px-10 md:pb-14 md:pt-10 lg:pb-16">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      <nav aria-label="Патека" className="flex flex-wrap items-center gap-2 text-[11.5px] uppercase tracking-[0.18em]">
-        <Link href="/" className="text-stone-2/50 transition-colors hover:text-gold-300">
+      <nav aria-label="Патека" className="flex items-center gap-2 text-[11px] uppercase tracking-[0.16em] sm:text-[11.5px]">
+        <Link href="/" className="shrink-0 text-stone-2/50 transition-colors hover:text-gold-300">
           Возила во понуда
         </Link>
         <span className="text-gold-500/40">/</span>
-        <span className="text-stone-2/75">{vehicleShortTitle(vehicle)}</span>
+        <span className="truncate text-stone-2/75">{vehicleShortTitle(vehicle)}</span>
       </nav>
 
-      <div className="mt-8 grid gap-10 lg:grid-cols-[1.5fr_1fr] lg:items-start lg:gap-12">
-        {/* -------- left column -------- */}
-        <div className="order-2 lg:order-1">
+      <div className="mt-5 grid gap-8 md:mt-8 lg:grid-cols-[1.55fr_1fr] lg:items-start lg:gap-12">
+        {/* ---------- main column ---------- */}
+        <div>
           <VehicleGallery images={images} alt={title} />
 
+          {/* on phones the name, price and contact buttons come right after the photos */}
+          <div className="mt-6 lg:hidden">
+            <VehicleSummary
+              vehicle={vehicle}
+              settings={settings}
+              title={title}
+              summary={summary}
+              headingLevel="h1"
+            />
+          </div>
+
           {vehicle.video_url ? (
-            <section className="mt-12">
-              <h2 className="font-display text-[26px] text-stone md:text-[30px]">Видео од возилото</h2>
-              <div className="mt-5">
+            <section className="mt-10 md:mt-12">
+              <SectionHeading>Видео од возилото</SectionHeading>
+              <div className="mt-4 md:mt-5">
                 <VehicleVideo url={vehicle.video_url} title={title} />
               </div>
             </section>
           ) : null}
 
-          <section className="mt-12">
-            <h2 className="font-display text-[26px] text-stone md:text-[30px]">Спецификации</h2>
-            <dl className="mt-5 grid border-t border-gold-500/20 sm:grid-cols-2 sm:gap-x-10 [&>div:nth-child(-n+2)]:sm:border-t-0">
+          <section className="mt-10 md:mt-12">
+            <SectionHeading>Спецификации</SectionHeading>
+            <dl className="mt-4 grid border-t border-gold-500/20 sm:mt-5 sm:grid-cols-2 sm:gap-x-10 [&>div:nth-child(-n+2)]:sm:border-t-0">
               <SpecRow icon={CalendarDays} label="Година" value={String(vehicle.year)} />
               <SpecRow icon={Gauge} label="Километри" value={formatMileage(vehicle.mileage_km)} />
               <SpecRow icon={Fuel} label="Гориво" value={vehicle.fuel ?? "—"} />
@@ -195,14 +212,18 @@ export default async function VehicleDetailPage({ params }: Params) {
               <SpecRow icon={Palette} label="Боја" value={vehicle.color ?? "—"} />
               <SpecRow icon={Leaf} label="Euro стандард" value={vehicle.euro_standard ?? "—"} />
               <SpecRow icon={FileText} label="Регистрација" value={vehicle.registration ?? "—"} />
-              <SpecRow icon={Droplet} label="Шасија/состојба" value={vehicle.status === "sold" ? "Продадено" : "Достапно за разгледување"} />
+              <SpecRow
+                icon={Car}
+                label="Состојба"
+                value={sold ? "Продадено" : "Достапно за разгледување"}
+              />
             </dl>
           </section>
 
           {vehicle.description ? (
-            <section className="mt-12">
-              <h2 className="font-display text-[26px] text-stone md:text-[30px]">Опис</h2>
-              <div className="mt-5 max-w-prose space-y-4 text-[16px] leading-relaxed text-stone-2/75">
+            <section className="mt-10 md:mt-12">
+              <SectionHeading>Опис</SectionHeading>
+              <div className="mt-4 max-w-prose space-y-4 text-[16.5px] leading-relaxed text-stone-2/78 sm:text-[16px] md:mt-5">
                 {vehicle.description.split(/\n+/).map((para, i) => (
                   <p key={i}>{para}</p>
                 ))}
@@ -211,11 +232,11 @@ export default async function VehicleDetailPage({ params }: Params) {
           ) : null}
 
           {vehicle.equipment && vehicle.equipment.length > 0 ? (
-            <section className="mt-12">
-              <h2 className="font-display text-[26px] text-stone md:text-[30px]">Опрема</h2>
-              <ul className="mt-5 grid gap-3 sm:grid-cols-2">
+            <section className="mt-10 md:mt-12">
+              <SectionHeading>Опрема</SectionHeading>
+              <ul className="mt-4 grid gap-3 sm:mt-5 sm:grid-cols-2">
                 {vehicle.equipment.map((item) => (
-                  <li key={item} className="flex items-start gap-3 text-[15px] text-stone-2/75">
+                  <li key={item} className="flex items-start gap-3 text-[15.5px] text-stone-2/78 sm:text-[15px]">
                     <Check className="mt-0.5 h-4 w-4 shrink-0 text-gold-500" aria-hidden="true" />
                     {item}
                   </li>
@@ -223,56 +244,31 @@ export default async function VehicleDetailPage({ params }: Params) {
               </ul>
             </section>
           ) : null}
+
+          {/* contact block again at the end of the page, after the details */}
+          <div className="mt-10 lg:hidden">
+            <SectionHeading>Контакт</SectionHeading>
+            <p className="mt-3 text-[15.5px] leading-relaxed text-stone-2/70">
+              Јави се за да договориме разгледување во термин што ти одговара.
+            </p>
+            <a
+              href={phoneHref ?? "#"}
+              className="mt-4 inline-flex min-h-[56px] w-full items-center justify-center bg-gold-500 px-6 text-[15px] font-bold tracking-[0.04em] text-brand-950 transition-colors hover:bg-gold-300 active:scale-[0.99]"
+            >
+              {settings.phone_display ?? "Јави се"}
+            </a>
+          </div>
         </div>
 
-        {/* -------- right column -------- */}
-        <aside className="order-1 lg:order-2 lg:sticky lg:top-24">
-          <div className="border border-gold-500/20 bg-brand-900/50 p-6 md:p-7">
-            <div className="flex items-center justify-between gap-3">
-              <span className="aw-eyebrow">{sold ? "Архива" : "Во понуда"}</span>
-              <span
-                className={`px-3 py-1 text-[10.5px] font-bold uppercase tracking-[0.22em] ${
-                  sold
-                    ? "bg-brand-950/85 text-stone-2/70"
-                    : vehicle.status === "reserved"
-                      ? "bg-gold-500/90 text-brand-950"
-                      : "border border-gold-500/40 text-gold-300"
-                }`}
-              >
-                {STATUS_LABELS[vehicle.status]}
-              </span>
-            </div>
-
-            <h1 className="mt-5 font-display text-[30px] leading-tight text-stone md:text-[36px]">{title}</h1>
-            {vehicle.version ? <p className="mt-2 text-[14px] text-stone-2/60">{vehicle.version}</p> : null}
-            <p className="mt-4 text-[13.5px] text-stone-2/70">{summaryLine(vehicle)}</p>
-
-            <div className="aw-hairline my-6" />
-
-            <p className="font-display text-[38px] leading-none text-gold-300 md:text-[42px]">
-              {formatPriceEur(vehicle.price_eur)}
-            </p>
-            {vehicle.price_mkd ? (
-              <p className="mt-2 text-[13.5px] text-stone-2/55">≈ {formatNumber(vehicle.price_mkd)} ден.</p>
-            ) : null}
-
-            <div className="mt-7">
-              <ContactButtons
-                phoneDisplay={settings.phone_display}
-                phoneE164={settings.phone_e164}
-                viber={settings.viber}
-                whatsapp={settings.whatsapp}
-                subject={`Здраво AUTO WIND, ме интересира ${title} (${vehicle.year}).`}
-                compact
-              />
-            </div>
-
-            <p className="mt-5 text-[12.5px] leading-relaxed text-stone-2/50">
-              {sold
-                ? "Ова возило е продадено. Јави се и ќе ти предложиме слични возила што пристигнуваат."
-                : "Јави се за да договориме разгледување во термин што ти одговара. Достапно и за тест вожња."}
-            </p>
-          </div>
+        {/* ---------- sticky column (desktop only) ---------- */}
+        <aside className="hidden lg:sticky lg:top-24 lg:block">
+          <VehicleSummary
+            vehicle={vehicle}
+            settings={settings}
+            title={title}
+            summary={summary}
+            headingLevel="h2"
+          />
 
           <Link
             href="/"
@@ -285,24 +281,27 @@ export default async function VehicleDetailPage({ params }: Params) {
       </div>
 
       {similar.length > 0 ? (
-        <section className="mt-20 border-t border-gold-500/15 pt-14">
+        <section className="mt-14 border-t border-gold-500/15 pt-10 md:mt-20 md:pt-14">
           <p className="aw-eyebrow">Може да те интересира</p>
-          <h2 className="mt-4 font-display text-[28px] leading-tight text-stone md:text-[34px]">
+          <h2 className="mt-3 font-display text-[26px] leading-tight text-stone sm:text-[28px] md:mt-4 md:text-[34px]">
             Слични возила во понуда
           </h2>
-          <div className="mt-9 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-6 grid gap-5 sm:grid-cols-2 sm:gap-6 md:mt-9 lg:grid-cols-3">
             {similar.map((v) => (
               <VehicleCard key={v.id} vehicle={v} />
             ))}
           </div>
         </section>
       ) : null}
+
+      <MobileActionBar
+        priceLabel={formatPriceEur(vehicle.price_eur)}
+        phoneHref={phoneHref}
+        phoneDisplay={settings.phone_display}
+        whatsappHref={whatsappHref}
+        subject={`Здраво AUTO WIND, ме интересира ${title} (${vehicle.year}).`}
+      />
     </div>
   );
 }
-
-
-
-
-
 

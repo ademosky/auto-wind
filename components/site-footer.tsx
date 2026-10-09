@@ -24,10 +24,11 @@ export function SiteFooter({
           <div>
             <span className="relative block h-[52px] w-[162px] overflow-hidden md:h-[60px] md:w-[186px]">
               <Image
-                src="/brand/auto-wind-logo.png"
+                src="/brand/auto-wind-logo.webp"
                 alt="AUTO WIND"
                 fill
                 sizes="186px"
+                unoptimized
                 className="object-contain object-left"
               />
             </span>

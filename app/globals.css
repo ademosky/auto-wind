@@ -134,12 +134,17 @@
   html {
     scroll-behavior: smooth;
     -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    /* clip (not hidden) so sticky positioning keeps working */
+    overflow-x: clip;
   }
   body {
     background-color: var(--background);
     color: var(--foreground);
     font-family: var(--font-body-raw), system-ui, sans-serif;
     font-weight: 400;
+    overflow-x: clip;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
@@ -230,6 +235,27 @@
   padding: 0.4rem 0.75rem;
 }
 
+/* ---------- mobile helpers ---------- */
+
+/* keeps fixed bottom bars clear of the iPhone home indicator */
+.aw-safe-bottom {
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+}
+
+.aw-no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.aw-no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .aw-eyebrow {
+    letter-spacing: 0.26em;
+  }
+}
+
 /* ---------- motion ---------- */
 @keyframes aw-rise {
   from {
@@ -315,4 +341,6 @@
     scroll-behavior: auto !important;
   }
 }
+
+
 

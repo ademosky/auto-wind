@@ -27,44 +27,48 @@ export function VehiclePlaceholder({ label }: { label?: string }) {
   );
 }
 
-function SpecItem({
-  icon: Icon,
-  value,
-}: {
-  icon: typeof Fuel;
-  value: string;
-}) {
+function SpecItem({ icon: Icon, value }: { icon: typeof Fuel; value: string }) {
   return (
-    <span className="inline-flex items-center gap-1.5 text-[12.5px] text-stone-2/70">
-      <Icon className="h-3.5 w-3.5 text-gold-500/80" aria-hidden="true" />
+    <span className="inline-flex items-center gap-1.5 text-[15px] text-stone-2/75 sm:text-[13.5px]">
+      <Icon className="h-4 w-4 shrink-0 text-gold-500/80 sm:h-3.5 sm:w-3.5" aria-hidden="true" />
       {value}
     </span>
   );
 }
 
-export function VehicleCard({ vehicle }: { vehicle: VehicleWithImages }) {
+export function VehicleCard({
+  vehicle,
+  priority = false,
+}: {
+  vehicle: VehicleWithImages;
+  priority?: boolean;
+}) {
   const cover = coverOf(vehicle);
   const sold = vehicle.status === "sold";
   const reserved = vehicle.status === "reserved";
+  const title = vehicleTitle(vehicle);
 
   return (
     <article className="aw-card group relative flex h-full flex-col overflow-hidden border border-gold-500/18 bg-brand-900/45 transition-colors duration-300 hover:border-gold-500/45 focus-within:border-gold-500/45">
       <Link
         href={`/vozila/${vehicle.slug}`}
+        aria-label={`${title} — отвори детали`}
         className="aw-card-media relative block aspect-[4/3] overflow-hidden bg-brand-800"
-        aria-label={`${vehicleTitle(vehicle)} — отвори детали`}
       >
         {cover ? (
           <Image
             src={cover}
-            alt={`${vehicleTitle(vehicle)}`}
+            alt={title}
             fill
+            priority={priority}
+            fetchPriority={priority ? "high" : "auto"}
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className={`object-cover ${sold ? "grayscale-[85%]" : ""}`}
           />
         ) : (
           <VehiclePlaceholder label={vehicleShortTitle(vehicle)} />
         )}
+
         <span className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,rgba(3,23,14,0.85),rgba(3,23,14,0.05)_55%)]" />
 
         {sold || reserved ? (
@@ -77,21 +81,24 @@ export function VehicleCard({ vehicle }: { vehicle: VehicleWithImages }) {
           </span>
         ) : null}
 
-        <span className="absolute bottom-3.5 left-4 inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-gold-300 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+        <span className="absolute bottom-3.5 left-4 hidden items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-gold-300 opacity-0 transition-opacity duration-300 group-hover:opacity-100 sm:inline-flex">
           Види детали
           <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
         </span>
       </Link>
 
-      <div className="flex flex-1 flex-col p-5 md:p-6">
+      <div className="flex flex-1 flex-col p-4 sm:p-5 md:p-6">
         <div className="flex items-baseline justify-between gap-3">
-          <h3 className="font-display text-[21px] leading-tight text-stone">
+          <h3 className="font-display text-[20px] leading-tight text-stone sm:text-[21px]">
             {vehicleShortTitle(vehicle)}
           </h3>
           <span className="shrink-0 font-display text-[15px] text-gold-500">{vehicle.year}</span>
         </div>
+
         {vehicle.version ? (
-          <p className="mt-1 text-[13px] text-stone-2/55">{vehicle.version}</p>
+          <p className="mt-1.5 text-[14px] leading-snug text-stone-2/60 sm:text-[13px]">
+            {vehicle.version}
+          </p>
         ) : null}
 
         <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2">
@@ -103,19 +110,21 @@ export function VehicleCard({ vehicle }: { vehicle: VehicleWithImages }) {
         <div className="aw-hairline mt-5" />
 
         <div className="mt-4 flex items-end justify-between gap-3">
-          <p className="font-display text-[26px] leading-none text-gold-300">
+          <p
+            className={`font-display text-[27px] leading-none sm:text-[26px] ${
+              sold ? "text-stone-2/55" : "text-gold-300"
+            }`}
+          >
             {formatPriceEur(vehicle.price_eur)}
           </p>
           {vehicle.price_mkd ? (
-            <p className="pb-0.5 text-[12.5px] text-stone-2/50">
-              ≈ {formatNumber(vehicle.price_mkd)} ден.
-            </p>
+            <p className="pb-0.5 text-[13px] text-stone-2/50">≈ {formatNumber(vehicle.price_mkd)} ден.</p>
           ) : null}
         </div>
 
         <Link
           href={`/vozila/${vehicle.slug}`}
-          className="mt-5 inline-flex items-center justify-between gap-2 border border-gold-500/35 px-4 py-3 text-[12px] font-semibold uppercase tracking-[0.18em] text-gold-100 transition-colors hover:border-gold-500 hover:bg-gold-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500/60 active:scale-[0.99]"
+          className="mt-5 inline-flex min-h-[52px] items-center justify-between gap-2 border border-gold-500/35 px-4 py-3 text-[12.5px] font-semibold uppercase tracking-[0.18em] text-gold-100 transition-colors hover:border-gold-500 hover:bg-gold-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500/60 active:scale-[0.99] sm:min-h-0"
         >
           Целосни детали
           <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
