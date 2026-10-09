@@ -6,19 +6,36 @@ import { ArrowLeft, ArrowRight, Expand, X } from "lucide-react";
 
 type Img = { id: string; url: string; width?: number | null; height?: number | null };
 
+/**
+ * Галерија на возилото.
+ *
+ * — Главната фотографија е во секогаш ист кадар (4:3) за да не скока страницата.
+ * — Секоја фотографија се гледа во целост: вертикалните не се сечат, туку добиваат
+ *   замргната позадина од самата слика.
+ * — Сите фотографии се под главната, како полици што се допираат — допир отвора
+ *   целосен приказ на таа фотографија.
+ */
 export function VehicleGallery({ images, alt }: { images: Img[]; alt: string }) {
   const [index, setIndex] = useState(0);
   const [open, setOpen] = useState(false);
   const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const strip = useRef<HTMLDivElement | null>(null);
   const total = images.length;
 
   const go = useCallback(
     (dir: 1 | -1) => {
-      if (total === 0) return;
-      setIndex((i) => (i + dir + total) % total);
+      setIndex((i) => (i + dir + (images.length || 1)) % (images.length || 1));
     },
-    [total],
+    [images.length],
   );
+
+  const select = useCallback((i: number) => setIndex(i), []);
+
+  // keep the selected photo in view in the strip below
+  useEffect(() => {
+    const el = strip.current?.querySelector<HTMLElement>(`[data-thumb="${index}"]`);
+    el?.scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" });
+  }, [index]);
 
   useEffect(() => {
     if (!open) return;
@@ -38,14 +55,13 @@ export function VehicleGallery({ images, alt }: { images: Img[]; alt: string }) 
 
   if (total === 0) {
     return (
-      <div className="relative flex aspect-[4/3] items-center justify-center border border-gold-500/20 bg-brand-800 sm:aspect-[16/10]">
+      <div className="relative flex aspect-[4/3] items-center justify-center border border-gold-500/20 bg-brand-800">
         <span className="text-[11px] uppercase tracking-[0.3em] text-gold-500/60">Фотографии во подготовка</span>
       </div>
     );
   }
 
   const current = images[Math.min(index, total - 1)];
-  // portrait photos are shown in full; they would lose the roof and wheels if cropped
   const portrait = (current?.height ?? 0) > (current?.width ?? 0);
 
   const onTouchStart = (e: React.TouchEvent) => {
@@ -60,41 +76,65 @@ export function VehicleGallery({ images, alt }: { images: Img[]; alt: string }) 
     const t = e.changedTouches[0];
     const dx = t.clientX - start.x;
     const dy = t.clientY - start.y;
-    // ignore vertical scrolls and taps
     if (Math.abs(dx) < 45 || Math.abs(dx) < Math.abs(dy)) return;
     go(dx < 0 ? 1 : -1);
+  };
+
+  /** Една слика: цела во кадарот, со замргнат фон ако не е истиот формат. */
+  const Frame = ({ img, label, priority }: { img: Img; label: string; priority?: boolean }) => {
+    const tall = (img.height ?? 0) > (img.width ?? 0);
+    return (
+      <>
+        {tall ? (
+          <Image
+            src={img.url}
+            alt=""
+            aria-hidden="true"
+            fill
+            sizes="100vw"
+            className="scale-125 object-cover opacity-35 blur-3xl"
+          />
+        ) : null}
+        <Image
+          key={img.id}
+          src={img.url}
+          alt={label}
+          fill
+          priority={priority}
+          fetchPriority={priority ? "high" : "auto"}
+          sizes="(max-width: 1024px) 100vw, 62vw"
+          className={tall ? "object-contain" : "object-cover"}
+        />
+      </>
+    );
   };
 
   return (
     <div>
       <div
-        className={`relative touch-pan-y overflow-hidden border border-gold-500/20 bg-brand-800 transition-[aspect-ratio] duration-300 ${
-          portrait ? "aspect-[3/4]" : "aspect-[4/3]"
-        }`}
+        className="relative aspect-[4/3] w-full touch-pan-y overflow-hidden border border-gold-500/20 bg-brand-800"
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
-        {portrait ? (
-          <Image
-            src={current.url}
-            alt=""
-            aria-hidden="true"
-            fill
-            sizes="100vw"
-            className="scale-110 object-cover opacity-40 blur-2xl"
-          />
-        ) : null}
+        <Frame img={current} label={`${alt} — фотографија ${index + 1}`} priority={index === 0} />
 
-        <Image
-          key={current.id}
-          src={current.url}
-          alt={`${alt} — фотографија ${index + 1}`}
-          fill
-          priority={index === 0}
-          fetchPriority={index === 0 ? "high" : "auto"}
-          sizes="(max-width: 1024px) 100vw, 62vw"
-          className={portrait ? "object-contain" : "object-cover"}
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          aria-label={`Отвори ги фотографиите на цел екран (${total})`}
+          className="absolute inset-0 z-10 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gold-500/60"
         />
+
+        <span className="pointer-events-none absolute right-3 top-3 z-20 inline-flex h-10 items-center gap-2 border border-gold-500/30 bg-brand-950/70 px-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-gold-100 backdrop-blur">
+          <Expand className="h-4 w-4" aria-hidden="true" />
+          Целосно
+        </span>
+
+        {total > 1 ? (
+          <span className="pointer-events-none absolute bottom-3 left-3 z-20 border border-gold-500/25 bg-brand-950/70 px-3 py-1.5 text-[12px] font-semibold tracking-[0.12em] text-stone-2/85 backdrop-blur">
+            {index + 1} / {total}
+          </span>
+        ) : null}
 
         {total > 1 ? (
           <>
@@ -102,7 +142,7 @@ export function VehicleGallery({ images, alt }: { images: Img[]; alt: string }) 
               type="button"
               onClick={() => go(-1)}
               aria-label="Претходна фотографија"
-              className="absolute left-2 top-1/2 hidden h-12 w-12 -translate-y-1/2 cursor-pointer items-center justify-center border border-gold-500/35 bg-brand-950/70 text-gold-100 backdrop-blur transition-colors hover:bg-brand-950/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500/60 sm:inline-flex"
+              className="absolute left-2 top-1/2 z-20 hidden h-11 w-11 -translate-y-1/2 cursor-pointer items-center justify-center border border-gold-500/35 bg-brand-950/70 text-gold-100 backdrop-blur transition-colors hover:bg-brand-950/90 sm:inline-flex"
             >
               <ArrowLeft className="h-5 w-5" aria-hidden="true" />
             </button>
@@ -110,59 +150,49 @@ export function VehicleGallery({ images, alt }: { images: Img[]; alt: string }) 
               type="button"
               onClick={() => go(1)}
               aria-label="Следна фотографија"
-              className="absolute right-2 top-1/2 hidden h-12 w-12 -translate-y-1/2 cursor-pointer items-center justify-center border border-gold-500/35 bg-brand-950/70 text-gold-100 backdrop-blur transition-colors hover:bg-brand-950/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500/60 sm:inline-flex"
+              className="absolute right-2 top-1/2 z-20 hidden h-11 w-11 -translate-y-1/2 cursor-pointer items-center justify-center border border-gold-500/35 bg-brand-950/70 text-gold-100 backdrop-blur transition-colors hover:bg-brand-950/90 sm:inline-flex"
             >
               <ArrowRight className="h-5 w-5" aria-hidden="true" />
             </button>
           </>
         ) : null}
-
-        <button
-          type="button"
-          onClick={() => setOpen(true)}
-          aria-label="Отвори на цел екран"
-          className="absolute right-3 top-3 inline-flex h-11 w-11 cursor-pointer items-center justify-center border border-gold-500/35 bg-brand-950/70 text-gold-100 backdrop-blur transition-colors hover:bg-brand-950/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500/60"
-        >
-          <Expand className="h-5 w-5" aria-hidden="true" />
-        </button>
-
-        <span className="absolute bottom-3 left-3 border border-gold-500/25 bg-brand-950/70 px-3 py-1.5 text-[12px] font-semibold tracking-[0.12em] text-stone-2/85 backdrop-blur">
-          {index + 1} / {total}
-        </span>
-
-        {total > 1 ? (
-          <span
-            className="absolute bottom-3.5 left-1/2 flex -translate-x-1/2 items-center gap-1.5 sm:hidden"
-            aria-hidden="true"
-          >
-            {images.map((img, i) => (
-              <span
-                key={img.id}
-                className={`h-1.5 rounded-full transition-all duration-300 ${
-                  i === index ? "w-4 bg-gold-300" : "w-1.5 bg-stone-2/35"
-                }`}
-              />
-            ))}
-          </span>
-        ) : null}
       </div>
 
       {total > 1 ? (
-        <div className="aw-no-scrollbar mt-3 flex snap-x snap-mandatory gap-2.5 overflow-x-auto pb-1 sm:gap-3">
-          {images.map((img, i) => (
-            <button
-              key={img.id}
-              type="button"
-              onClick={() => setIndex(i)}
-              aria-label={`Прикажи фотографија ${i + 1}`}
-              aria-current={i === index}
-              className={`relative h-16 w-24 shrink-0 cursor-pointer snap-start overflow-hidden border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500/60 sm:h-20 sm:w-28 ${
-                i === index ? "border-gold-500 opacity-100" : "border-gold-500/20 opacity-60 hover:opacity-100"
-              }`}
-            >
-              <Image src={img.url} alt="" fill sizes="112px" className="object-cover" />
-            </button>
-          ))}
+        <div className="mt-3">
+          <div
+            ref={strip}
+            className="aw-no-scrollbar flex snap-x snap-mandatory gap-2.5 overflow-x-auto pb-1"
+          >
+            {images.map((img, i) => (
+              <button
+                key={img.id}
+                type="button"
+                data-thumb={i}
+                onClick={() => {
+                  select(i);
+                  setOpen(true);
+                }}
+                aria-label={`Отвори фотографија ${i + 1} од ${total}`}
+                aria-current={i === index}
+                className={`relative h-[76px] w-[104px] shrink-0 cursor-pointer snap-start overflow-hidden border bg-brand-800 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500/60 sm:h-[88px] sm:w-[120px] ${
+                  i === index ? "border-gold-500" : "border-gold-500/20 opacity-70 hover:opacity-100"
+                }`}
+              >
+                <Image src={img.url} alt="" fill sizes="120px" className="object-cover" />
+                {(img.height ?? 0) > (img.width ?? 0) ? (
+                  <span
+                    className="pointer-events-none absolute bottom-1 right-1 h-4 w-3 border border-gold-500/40 bg-brand-950/70"
+                    aria-hidden="true"
+                  />
+                ) : null}
+              </button>
+            ))}
+          </div>
+
+          <p className="mt-2 text-center text-[12.5px] text-stone-2/55 sm:hidden">
+            Допрете фотографија за целосен приказ
+          </p>
         </div>
       ) : null}
 
@@ -171,19 +201,24 @@ export function VehicleGallery({ images, alt }: { images: Img[]; alt: string }) 
           role="dialog"
           aria-modal="true"
           aria-label={`${alt} — галерија`}
-          className="fixed inset-0 z-[70] flex items-center justify-center bg-brand-950/97 p-3 backdrop-blur-sm sm:p-4"
+          className="fixed inset-0 z-[70] flex flex-col bg-brand-950/98 backdrop-blur-sm"
         >
-          <button
-            type="button"
-            onClick={() => setOpen(false)}
-            aria-label="Затвори"
-            className="absolute right-3 top-3 inline-flex h-12 w-12 cursor-pointer items-center justify-center border border-gold-500/35 text-gold-100 transition-colors hover:bg-gold-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500/60"
-          >
-            <X className="h-5 w-5" aria-hidden="true" />
-          </button>
+          <div className="flex items-center justify-between gap-3 px-4 py-3">
+            <span className="text-[12.5px] tracking-[0.2em] text-stone-2/70">
+              {index + 1} / {total}
+            </span>
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              aria-label="Затвори"
+              className="inline-flex h-12 w-12 cursor-pointer items-center justify-center border border-gold-500/35 text-gold-100 transition-colors hover:bg-gold-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500/60"
+            >
+              <X className="h-5 w-5" aria-hidden="true" />
+            </button>
+          </div>
 
           <div
-            className="relative h-[70vh] w-full max-w-5xl sm:h-[76vh]"
+            className="relative flex-1"
             onTouchStart={onTouchStart}
             onTouchEnd={onTouchEnd}
           >
@@ -195,30 +230,45 @@ export function VehicleGallery({ images, alt }: { images: Img[]; alt: string }) 
               sizes="100vw"
               className="object-contain"
             />
+
+            {total > 1 ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => go(-1)}
+                  aria-label="Претходна фотографија"
+                  className="absolute left-1 top-1/2 inline-flex h-12 w-12 -translate-y-1/2 cursor-pointer items-center justify-center border border-gold-500/35 text-gold-100 transition-colors hover:bg-gold-500/10 sm:left-3"
+                >
+                  <ArrowLeft className="h-6 w-6" aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => go(1)}
+                  aria-label="Следна фотографија"
+                  className="absolute right-1 top-1/2 inline-flex h-12 w-12 -translate-y-1/2 cursor-pointer items-center justify-center border border-gold-500/35 text-gold-100 transition-colors hover:bg-gold-500/10 sm:right-3"
+                >
+                  <ArrowRight className="h-6 w-6" aria-hidden="true" />
+                </button>
+              </>
+            ) : null}
           </div>
 
           {total > 1 ? (
-            <>
-              <button
-                type="button"
-                onClick={() => go(-1)}
-                aria-label="Претходна фотографија"
-                className="absolute left-1 top-1/2 inline-flex h-12 w-12 -translate-y-1/2 cursor-pointer items-center justify-center border border-gold-500/35 text-gold-100 transition-colors hover:bg-gold-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500/60 sm:left-3"
-              >
-                <ArrowLeft className="h-6 w-6" aria-hidden="true" />
-              </button>
-              <button
-                type="button"
-                onClick={() => go(1)}
-                aria-label="Следна фотографија"
-                className="absolute right-1 top-1/2 inline-flex h-12 w-12 -translate-y-1/2 cursor-pointer items-center justify-center border border-gold-500/35 text-gold-100 transition-colors hover:bg-gold-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500/60 sm:right-3"
-              >
-                <ArrowRight className="h-6 w-6" aria-hidden="true" />
-              </button>
-              <span className="absolute bottom-4 left-1/2 -translate-x-1/2 text-[12px] tracking-[0.2em] text-stone-2/70">
-                {index + 1} / {total}
-              </span>
-            </>
+            <div className="aw-no-scrollbar aw-safe-bottom flex gap-2 overflow-x-auto px-4 py-3">
+              {images.map((img, i) => (
+                <button
+                  key={`pick-${img.id}`}
+                  type="button"
+                  onClick={() => select(i)}
+                  aria-label={`Прикажи фотографија ${i + 1}`}
+                  className={`relative h-14 w-20 shrink-0 cursor-pointer overflow-hidden border ${
+                    i === index ? "border-gold-500" : "border-gold-500/20 opacity-60"
+                  }`}
+                >
+                  <Image src={img.url} alt="" fill sizes="80px" className="object-cover" />
+                </button>
+              ))}
+            </div>
           ) : null}
         </div>
       ) : null}
