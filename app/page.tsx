@@ -3,7 +3,7 @@ import { Database } from "lucide-react";
 import { MapPin } from "lucide-react";
 import { BusinessMap } from "@/components/business-map";
 import { ContactButtons } from "@/components/contact-buttons";
-import { BUSINESS, GOOGLE_MAPS_LINK } from "@/lib/site";
+import { BUSINESS, GOOGLE_MAPS_LINK, GOOGLE_PLACE_SHORT_LINK } from "@/lib/site";
 import { VehicleBrowser } from "@/components/vehicle-browser";
 import type { VehicleWithImages } from "@/lib/types";
 import { getListedVehicles, getSettings } from "@/lib/supabase/queries";
@@ -132,6 +132,7 @@ export default async function HomePage() {
               longitude: BUSINESS.longitude,
             },
             telephone: settings.phone_e164 ?? undefined,
+            hasMap: GOOGLE_PLACE_SHORT_LINK,
             url: process.env.NEXT_PUBLIC_SITE_URL ?? undefined,
           }),
         }}
