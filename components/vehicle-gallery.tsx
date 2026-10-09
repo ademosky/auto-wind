@@ -25,9 +25,13 @@ export function VehicleGallery({ images, alt }: { images: Img[]; alt: string }) 
     [images.length],
   );
 
+  // scroll only the strip itself (scrollIntoView would drag the whole page down on load)
   useEffect(() => {
-    const el = strip.current?.querySelector<HTMLElement>(`[data-thumb="${index}"]`);
-    el?.scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" });
+    const box = strip.current;
+    const el = box?.querySelector<HTMLElement>(`[data-thumb="${index}"]`);
+    if (!box || !el) return;
+    const target = el.offsetLeft - (box.clientWidth - el.clientWidth) / 2;
+    box.scrollTo({ left: Math.max(0, target), behavior: "smooth" });
   }, [index]);
 
   useEffect(() => {
